@@ -50,7 +50,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Create dummy annotation file
-        run: echo '[{"message":"Some message","level":"warning","file":"src/main.ts","line":{"start":1,"end":1},"runner":"Pronto::SomeRunner"}]' >> annotations.json
+        run: echo '[{"message":"Some message","level":"warning","file":"src/main.ts","line":{"start":1,"end":1},"title":"Pronto::SomeRunner"}]' >> annotations.json
 
       - name: Test Local Action
         uses: ./

@@ -36,7 +36,7 @@ describe('action', () => {
       1,
       firstAnnotation.level,
       {
-        title: firstAnnotation.runner,
+        title: firstAnnotation.title,
         file: firstAnnotation.file,
         line: firstAnnotation.line?.start,
         endLine: firstAnnotation.line?.end

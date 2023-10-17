@@ -2842,7 +2842,7 @@ const parseJson = (jsonContent) => {
 };
 const buildFromReport = (reportLine) => {
     return new annotation_1.Annotation(reportLine.level, reportLine.message, {
-        title: reportLine.runner,
+        title: reportLine.title,
         file: reportLine.file,
         line: reportLine.line?.start,
         endLine: reportLine.line?.end

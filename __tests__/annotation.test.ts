@@ -15,11 +15,11 @@ describe('push', () => {
       level: 'error',
       file: 'db/migrate/20231013225210_create_products.rb',
       line: { start: 1, end: 1 },
-      runner: 'Pronto::RailsSchema'
+      title: 'Pronto::RailsSchema'
     }
 
     const annotation = new Annotation('error', reportLine.message, {
-      title: reportLine.runner,
+      title: reportLine.title,
       file: reportLine.file,
       line: reportLine.line?.start,
       endLine: reportLine.line?.end
@@ -31,7 +31,7 @@ describe('push', () => {
       1,
       reportLine.level,
       {
-        title: reportLine.runner,
+        title: reportLine.title,
         file: reportLine.file,
         line: reportLine.line?.start,
         endLine: reportLine.line?.end

@@ -3,7 +3,9 @@
 [![GitHub Super-Linter](https://github.com/actions/typescript-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
 ![CI](https://github.com/actions/typescript-action/actions/workflows/ci.yml/badge.svg)
 
-This action is meant to work with [pronto-action-annotations](https://github.com/emilio2hd/pronto-action-annotations).
+This action is meant to work with [pronto-annotations-formatter](https://github.com/emilio2hd/pronto-annotations-formatter). No need to use github oauth token.
+
+Learn more about pronto at https://github.com/prontolabs/pronto.
 
 ## Usage
 
@@ -24,9 +26,17 @@ steps:
       reportPath: annotations.json
 ```
 
-Note, you can also point to master with `uses: emilio2hd/pronto-annotate-action@master`
+Note, you can also point to the `main` branch with `uses: emilio2hd/pronto-annotate-action@main`
 
-Please, check this [annotations.json](__tests__/annotations.json), to see the expected json content.
+Please, check this [annotations.json](__tests__/annotations.json),
+to see the expected json content.
+
+Once you run the step, you should see the annotations on the following places:
+![Annotation Warning on Console](docs/annotation-warning-console.png)
+
+![Annotation Warning on Summary](docs/annotation-warning-on-summary.png)
+
+![Annotation Warning on Code](docs/annotation-warning-on-code.png)
 
 ## Development Setup
 

@@ -14,7 +14,7 @@ const parseJson = (jsonContent: string): Annotation[] => {
 
 const buildFromReport = (reportLine: any): Annotation => {
   return new Annotation(reportLine.level, reportLine.message, {
-    title: reportLine.runner,
+    title: reportLine.title,
     file: reportLine.file,
     line: reportLine.line?.start,
     endLine: reportLine.line?.end
