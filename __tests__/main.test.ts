@@ -1,80 +1,66 @@
-/**
- * Unit tests for the action's main functionality, src/main.ts
- *
- * These should be run as if the action was called from a workflow.
- * Specifically, the inputs listed in `action.yml` should be set as environment
- * variables following the pattern `INPUT_<INPUT_NAME>`.
- */
+import * as core from '@actions/core';
+import * as main from '../src/main';
 
-import * as core from '@actions/core'
-import * as main from '../src/main'
+import path from 'path';
+import { issueCommand } from "@actions/core/lib/command"
 
-// Mock the GitHub Actions core library
-const debugMock = jest.spyOn(core, 'debug')
-const getInputMock = jest.spyOn(core, 'getInput')
-const setFailedMock = jest.spyOn(core, 'setFailed')
-const setOutputMock = jest.spyOn(core, 'setOutput')
+import data from'./annotations.json';
 
-// Mock the action's main function
-const runMock = jest.spyOn(main, 'run')
+jest.mock("@actions/core/lib/command");
 
-// Other utilities
-const timeRegex = /^\d{2}:\d{2}:\d{2}/
+const getInputMock = jest.spyOn(core, 'getInput');
+const setFailedMock = jest.spyOn(core, 'setFailed');
+const runMock = jest.spyOn(main, 'run');
 
 describe('action', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
-  })
+  beforeEach(() => { jest.clearAllMocks() })
 
   it('sets the time output', async () => {
-    // Set the action's inputs as return values from core.getInput()
     getInputMock.mockImplementation((name: string): string => {
       switch (name) {
-        case 'milliseconds':
-          return '500'
+        case 'reportPath':
+          return path.resolve(process.cwd(), '__tests__/annotations.json');
         default:
           return ''
       }
-    })
+    });
 
-    await main.run()
-    expect(runMock).toHaveReturned()
+    await main.run();
 
-    // Verify that all of the core library functions were called correctly
-    expect(debugMock).toHaveBeenNthCalledWith(1, 'Waiting 500 milliseconds ...')
-    expect(debugMock).toHaveBeenNthCalledWith(
-      2,
-      expect.stringMatching(timeRegex)
-    )
-    expect(debugMock).toHaveBeenNthCalledWith(
-      3,
-      expect.stringMatching(timeRegex)
-    )
-    expect(setOutputMock).toHaveBeenNthCalledWith(
-      1,
-      'time',
-      expect.stringMatching(timeRegex)
-    )
+    expect(runMock).toHaveReturned();
+
+    const firstAnnotation = data[0];
+    expect(issueCommand).toHaveBeenNthCalledWith(
+        1,
+        firstAnnotation.level,
+        {
+          title: firstAnnotation.runner,
+          file: firstAnnotation.file,
+          line: firstAnnotation.line?.start,
+          endLine: firstAnnotation.line?.end
+        },
+        firstAnnotation.message
+      )
   })
 
-  it('sets a failed status', async () => {
-    // Set the action's inputs as return values from core.getInput()
+  it('input file does not exist', async () => {
+    const nonExistingFile = 'non-existing-annotations.json';
+
     getInputMock.mockImplementation((name: string): string => {
       switch (name) {
-        case 'milliseconds':
-          return 'this is not a number'
+        case 'reportPath':
+          return nonExistingFile
         default:
           return ''
       }
     })
 
     await main.run()
-    expect(runMock).toHaveReturned()
 
-    // Verify that all of the core library functions were called correctly
+    expect(runMock).toHaveReturned();
     expect(setFailedMock).toHaveBeenNthCalledWith(
-      1,
-      'milliseconds not a number'
-    )
+        1,
+        expect.stringMatching(`Report file '${nonExistingFile}' not found`)
+      )
   })
 })

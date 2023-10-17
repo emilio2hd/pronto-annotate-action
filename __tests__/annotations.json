@@ -1,0 +1,9 @@
+[
+  {
+    "message": "Migration file detected, but no changes in schema.rb",
+    "level": "warning",
+    "file": "db/migrate/20231013225210_create_products.rb",
+    "line": { "start": 1, "end": 1 },
+    "runner": "Pronto::RailsSchema"
+  }
+]
