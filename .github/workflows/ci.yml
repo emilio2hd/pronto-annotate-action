@@ -53,7 +53,6 @@ jobs:
         run: echo '[{"message":"Some message","level":"warning","file":"src/main.ts","line":{"start":1,"end":1},"runner":"Pronto::SomeRunner"}]' >> annotations.json
 
       - name: Test Local Action
-        id: test-action
         uses: ./
         with:
           reportPath: annotations.json

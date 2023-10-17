@@ -2722,6 +2722,32 @@ exports["default"] = _default;
 
 /***/ }),
 
+/***/ 161:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Annotation = void 0;
+const command_1 = __nccwpck_require__(351);
+class Annotation {
+    message;
+    level;
+    properties;
+    constructor(level, message, properties = {}) {
+        this.message = message;
+        this.level = level;
+        this.properties = properties;
+    }
+    push() {
+        (0, command_1.issueCommand)(this.level, this.properties, this.message);
+    }
+}
+exports.Annotation = Annotation;
+
+
+/***/ }),
+
 /***/ 399:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -2750,28 +2776,20 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
 const core = __importStar(__nccwpck_require__(186));
-const wait_1 = __nccwpck_require__(259);
-/**
- * The main function for the action.
- * @returns {Promise<void>} Resolves when the action is complete.
- */
+const report_parser_1 = __importDefault(__nccwpck_require__(348));
 async function run() {
     try {
-        const ms = core.getInput('milliseconds');
-        // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-        core.debug(`Waiting ${ms} milliseconds ...`);
-        // Log the current timestamp, wait, then log the new timestamp
-        core.debug(new Date().toTimeString());
-        await (0, wait_1.wait)(parseInt(ms, 10));
-        core.debug(new Date().toTimeString());
-        // Set outputs for other workflow steps to use
-        core.setOutput('time', new Date().toTimeString());
+        const reportPath = core.getInput('reportPath');
+        const annotations = (0, report_parser_1.default)(reportPath);
+        annotations.forEach(annotation => annotation.push());
     }
     catch (error) {
-        // Fail the workflow run if an error occurs
         if (error instanceof Error)
             core.setFailed(error.message);
     }
@@ -2781,27 +2799,76 @@ exports.run = run;
 
 /***/ }),
 
-/***/ 259:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ 348:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.wait = void 0;
-/**
- * Wait for a number of milliseconds.
- * @param milliseconds The number of milliseconds to wait.
- * @returns {Promise<string>} Resolves with 'done!' after the wait is over.
- */
-async function wait(milliseconds) {
-    return new Promise(resolve => {
-        if (isNaN(milliseconds)) {
-            throw new Error('milliseconds not a number');
-        }
-        setTimeout(() => resolve('done!'), milliseconds);
+const fs = __importStar(__nccwpck_require__(147));
+const core = __importStar(__nccwpck_require__(186));
+const annotation_1 = __nccwpck_require__(161);
+const parseJson = (jsonContent) => {
+    try {
+        return JSON.parse(jsonContent);
+    }
+    catch (err) {
+        throw new Error(`Unable to parse json!`);
+    }
+};
+const buildFromReport = (reportLine) => {
+    return new annotation_1.Annotation(reportLine.level, reportLine.message, {
+        title: reportLine.runner,
+        file: reportLine.file,
+        line: reportLine.line?.start,
+        endLine: reportLine.line?.end
     });
+};
+function parse(reportPath) {
+    if (!fs.existsSync(reportPath)) {
+        throw new Error(`Report file '${reportPath}' not found`);
+    }
+    const reportContent = fs.readFileSync(reportPath, 'utf8');
+    const report = parseJson(reportContent);
+    const annotations = [];
+    report.forEach((reportLine) => {
+        switch (reportLine.level) {
+            case 'error':
+            case 'warning':
+            case 'notice':
+                annotations.push(buildFromReport(reportLine));
+                break;
+            default:
+                core.warning(`Unknown annotation type: ${reportLine.level}. Valid types: error, warning, notice`);
+        }
+    });
+    return annotations;
 }
-exports.wait = wait;
+exports["default"] = parse;
 
 
 /***/ }),

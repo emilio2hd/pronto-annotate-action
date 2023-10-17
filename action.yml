@@ -1,3 +1,4 @@
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
 name: 'pronto-annotate-action'
 description: 'Action to read a pronto json report file and create github annotations'
 author: 'Emilio'
