@@ -3,9 +3,10 @@
 [![GitHub Super-Linter](https://github.com/actions/typescript-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
 ![CI](https://github.com/actions/typescript-action/actions/workflows/ci.yml/badge.svg)
 
-This action is meant to work with [pronto-annotations-formatter](https://github.com/emilio2hd/pronto-annotations-formatter). No need to use github oauth token.
+This action is meant to work with [pronto-annotations-formatter](https://github.com/emilio2hd/pronto-annotations-formatter).
+No need to use GitHub oauth token.
 
-Learn more about pronto at https://github.com/prontolabs/pronto.
+Learn more about pronto at <https://github.com/prontolabs/pronto>.
 
 ## Usage
 
