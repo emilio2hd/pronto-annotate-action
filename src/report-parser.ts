@@ -8,7 +8,7 @@ const parseJson = (jsonContent: string): Annotation[] => {
   try {
     return JSON.parse(jsonContent)
   } catch (err) {
-    core.error(`Error ${err}, unable to parse json`);
+    core.error(`Error ${err}, unable to parse json`)
     throw new Error(`Unable to parse json!`)
   }
 }

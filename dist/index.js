@@ -2837,6 +2837,7 @@ const parseJson = (jsonContent) => {
         return JSON.parse(jsonContent);
     }
     catch (err) {
+        core.error(`Error ${err}, unable to parse json`);
         throw new Error(`Unable to parse json!`);
     }
 };
